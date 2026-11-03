@@ -1,0 +1,9 @@
+Nav con el titulo de la web y un buscador funcional que busque juegos + un fito.
+
+Titulo de la web
+
+Que aprezcan los juegos cual catalogo con la protada el titulo, genero, plataforma, año, horas jugadas y valoración de jueguito.
+
+Se teieen que poder añadir y quitar jueguitos, desde la propia web con un botón.
+
+La idea es que se guarden los datos al cerrar la pagina (eso pal final).
