@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Biblioteca de Videojuegos</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <nav>
-        <!-- Hacer copia y pega de la del prollecto del Collados -->
+        <input type="text" id="buscador" placeholder="Buscar Videojuego...">
+        <button id="btnBuscar">Buscar</button>
+        <button id="btnOrdenar">Ordenar por valoracion</button>
     </nav>
     <br>
     <h1>Formulario para añadir videojuegos</h1>
@@ -19,6 +23,7 @@
             <input type="text" id="titulo" placeholder="Titulo" required>
             <input type="text" id="genero" placeholder="Genero" required>
             <input type="text" id="empresa" placeholder="Empresa" required>
+            <input type="text" id="plataforma" placeholder="Plataforma" required>
             <input type="number" id="tiempoJugado" placeholder="Horas jugadas" required>
             <input type="number" id="valoracion" min="1" max="5" placeholder="Valoracion" required>
             <input type="text" id="portada" placeholder="URL de la portada" required>
@@ -27,5 +32,6 @@
         </form>
     </section>
     <section id="biblioteca"></section>
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>

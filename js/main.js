@@ -1,43 +1,69 @@
 import { Videojuego } from "./classes/videojuego.js";
 import { mostrarVideojuegos } from "./interfaz/interfaz.js";
+import { guardarVideojuego, cargarVideojuego } from "./storage/LocalStorage.js";
 
-const videojuego = []; // Array de videojuegos
+// "let" porque al borrar vamos a reasignar el array. Arrancamos con lo que haya guardado.
+let videojuegos = cargarVideojuego();
+mostrarVideojuegos(videojuegos);
 
-// En referencia al html
+// Referencias al HTML
 const botonMostrar = document.getElementById("btnMostrarFormulario");
 const formulario = document.getElementById("formularioContainer");
 const form = document.getElementById("formVideojuego");
+const biblioteca = document.getElementById("biblioteca");
 
-// Mostrar el formulario
 botonMostrar.addEventListener("click", () => {
     formulario.hidden = false;
 });
 
-// Capturar submit - boton de guardar del html - guarda el juego
+// Guardar un juego nuevo
 form.addEventListener("submit", (e) => {
-    e.preventDefault(); // Evita que el formulario recargue la pagina
-    
-    // Busca el immput del formulario
-    const titulo = document.getElementById("titulo").value;
-    const genero = document.getElementById("genero").value;
-    const empresa = document.getElementById("empresa").value;
-    const tiempoJugado = document.getElementById("Horas jugadas").value;
-    const valoracion = document.getElementById("valoracion").value;
-    const portada = document.getElementById("portada").value;
-    const juego = new videojuego(titulo, genero, empresa, tiempoJugado, valoracion, portada);
+    e.preventDefault(); // evita que la página se recargue
 
-    videojuego.push(juego); // Guarda el juego nuevo en una Array
-    
-    mostrarVideojuegos(videojuego); // Muestra los juegos
+    // Leemos los valores AQUÍ DENTRO: es cuando el usuario ya los ha escrito.
+    // Number() porque un input siempre da texto y valoración/horas deben ser números.
+    const juego = new Videojuego(
+        document.getElementById("titulo").value,
+        document.getElementById("genero").value,
+        document.getElementById("empresa").value,
+        document.getElementById("plataforma").value,
+        Number(document.getElementById("tiempoJugado").value),
+        Number(document.getElementById("valoracion").value),
+        document.getElementById("portada").value
+    );
 
-    console.log(videojuego); // Muestra el contenido del Array en la consola
+    videojuegos.push(juego);
+    guardarVideojuego(videojuegos);   // guardamos cada vez que cambia la lista
+    mostrarVideojuegos(videojuegos);
+
+    form.reset();
+    formulario.hidden = true;
 });
 
-// Creacion de objeto videojuego
-const juego = new Videojuego(titulo, genero, empresa, tiempoJugado, valoracion, portada);
+// Borrar: UN solo listener en el contenedor en vez de uno por botón.
+// Los clics "burbujean" hacia arriba (propagación), así que el contenedor se entera
+// del clic en cualquier botón hijo. Esto se llama delegación de eventos y funciona
+// también con las tarjetas que se creen más tarde.
+biblioteca.addEventListener("click", (e) => {
+    if (!e.target.matches("button[data-id]")) return; // ¿era un botón de borrar?
 
-// Añadir al array
-videojuego.push(juego);
+    const id = Number(e.target.dataset.id); // dataset siempre da texto, lo pasamos a número
+    videojuegos = videojuegos.filter(juego => juego.id !== id); // nos quedamos con todos MENOS ese
+    guardarVideojuego(videojuegos);
+    mostrarVideojuegos(videojuegos);
+});
 
-// Mostar por consola
-console.log(videojuego);
+// Buscador
+document.getElementById("btnBuscar").addEventListener("click", () => {
+    const texto = document.getElementById("buscador").value.toLowerCase();
+    const resultado = videojuegos.filter(juego => juego.titulo.toLowerCase().includes(texto));
+    mostrarVideojuegos(resultado);
+});
+
+// Ordenar por valoración
+document.getElementById("btnOrdenar").addEventListener("click", () => {
+    // [...videojuegos] hace una copia: sort() modifica el array original
+    // y no queremos cambiar el orden guardado, solo el orden en pantalla.
+    const ordenados = [...videojuegos].sort((a, b) => b.valoracion - a.valoracion);
+    mostrarVideojuegos(ordenados); // el paso que te faltaba
+});
