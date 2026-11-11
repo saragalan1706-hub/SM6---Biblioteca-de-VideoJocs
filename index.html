@@ -6,6 +6,26 @@
     <title>Biblioteca de Videojuegos</title>
 </head>
 <body>
-    
+    <nav>
+        <!-- Hacer copia y pega de la del prollecto del Collados -->
+    </nav>
+    <br>
+    <h1>Formulario para añadir videojuegos</h1>
+    <br><br><br>
+    <button id="btnMostrarFormulario">Añadir Videojuegos</button>
+
+    <section id="formularioContainer" hidden>
+        <form id="formVideojuego">
+            <input type="text" id="titulo" placeholder="Titulo" required>
+            <input type="text" id="genero" placeholder="Genero" required>
+            <input type="text" id="empresa" placeholder="Empresa" required>
+            <input type="number" id="tiempoJugado" placeholder="Horas jugadas" required>
+            <input type="number" id="valoracion" min="1" max="5" placeholder="Valoracion" required>
+            <input type="text" id="portada" placeholder="URL de la portada" required>
+
+            <button type="submit">Guardar</button>
+        </form>
+    </section>
+    <section id="biblioteca"></section>
 </body>
 </html>

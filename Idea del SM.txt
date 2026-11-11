@@ -7,3 +7,16 @@ Que aprezcan los juegos cual catalogo con la protada el titulo, genero, platafor
 Se teieen que poder añadir y quitar jueguitos, desde la propia web con un botón.
 
 La idea es que se guarden los datos al cerrar la pagina (eso pal final).
+
+js/
+
+├── main.js
+│
+├── classes/
+│   └── Videojuego.js
+│
+├── managers/
+│   └── BibliotecaManager.js
+│
+└── ui/
+    └── UI.js
