@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,9 +14,16 @@
         <button id="btnBuscar">Buscar</button>
         <button id="btnOrdenar">Ordenar por valoracion</button>
     </nav>
+    <h1>Biblioteca de Videojuegos</h1>
+    <section id="estadisticas" style="margin: 20px 0; padding: 15px; background: #f0f0f0; border-radius: 8px;">
+        <h3>Estadísticas</h3>
+        <p><strong>Total de horas jugadas:</strong> <span id="totalHoras">0</span></p>
+        <p><strong>Géneros únicos:</strong> <span id="generosUnicos">Ninguno</span></p>
+        <p><strong>Juegos por plataforma:</strong> <span id="plataformas">Ninguna</span></p>
+    </section>
     <br>
     <h1>Formulario para añadir videojuegos</h1>
-    <br><br><br>
+    <br>
     <button id="btnMostrarFormulario">Añadir Videojuegos</button>
 
     <section id="formularioContainer" hidden>
@@ -26,7 +34,7 @@
             <input type="text" id="plataforma" placeholder="Plataforma" required>
             <input type="number" id="tiempoJugado" placeholder="Horas jugadas" required>
             <input type="number" id="valoracion" min="1" max="5" placeholder="Valoracion" required>
-            <input type="text" id="portada" placeholder="URL de la portada" required>
+            <input type="text" id="portada" placeholder="Portada">
 
             <button type="submit">Guardar</button>
         </form>
@@ -34,4 +42,5 @@
     <section id="biblioteca"></section>
     <script type="module" src="js/main.js"></script>
 </body>
+
 </html>

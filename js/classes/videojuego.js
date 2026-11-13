@@ -10,7 +10,7 @@ export class Videojuego {
         this.portada = portada;
     }
 
-    // Combieret las valoraciones en estrellas
+    // Combierte el numero de las valoraciones en estrellas
     estrellas() {
         return "★".repeat(this.valoracion) + "☆".repeat(5 - this.valoracion);
     }

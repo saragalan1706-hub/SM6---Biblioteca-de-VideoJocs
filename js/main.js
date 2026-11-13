@@ -2,26 +2,63 @@ import { Videojuego } from "./classes/videojuego.js";
 import { mostrarVideojuegos } from "./interfaz/interfaz.js";
 import { guardarVideojuego, cargarVideojuego } from "./storage/LocalStorage.js";
 
-// "let" porque al borrar vamos a reasignar el array. Arrancamos con lo que haya guardado.
-let videojuegos = cargarVideojuego();
-mostrarVideojuegos(videojuegos);
+let videojuegos = cargarVideojuego(); // Cargamos los juegos guardados
+mostrarVideojuegos(videojuegos); // Los pinta en la tabla
 
-// Referencias al HTML
-const botonMostrar = document.getElementById("btnMostrarFormulario");
-const formulario = document.getElementById("formularioContainer");
-const form = document.getElementById("formVideojuego");
-const biblioteca = document.getElementById("biblioteca");
+// Arrays que guardan jugeos
+const historial = [];
 
+// Busca en el HTML
+const botonMostrar = document.getElementById("btnMostrarFormulario"); // Boton de añadir juegos
+const formulario = document.getElementById("formularioContainer"); // Bloque del contenedor formulario
+const form = document.getElementById("formVideojuego"); // Formulario de videojuegos
+const biblioteca = document.getElementById("biblioteca"); // Seccion de la biblioteca
+
+// ESTADISTICAS DEL INICIO
+function actualizarEstadisticas() {
+    const plataformas = new Map(); // Guarda las plataformas y las reptidas las cuenta
+    const generosUnicos = new Set(); // No admite repetidos, solo escribe una vez
+
+    // Recorre los juegos para hacer el Set y el Map
+    for (const juego of videojuegos) {
+        generosUnicos.add(juego.genero);
+        plataformas.set(
+            juego.plataforma,
+            (plataformas.get(juego.plataforma) || 0) + 1
+        );
+    }
+
+    
+    const totalHoras = videojuegos.reduce((acc, j) => acc + j.tiempoJugado, 0); // Empieza en 0 enn cada vuelta suma las horas de cada juego
+
+    // Escribe los resultados en la pagina
+    document.getElementById("totalHoras").textContent = totalHoras;
+
+    // Combierte el set en array muestra el genero  si no hay ninguno lo deja en null
+    document.getElementById("generosUnicos").textContent =
+        generosUnicos.size > 0 ? [...generosUnicos].join(", ") : "Ninguno";
+
+    // Recorre el Map y serpar entre plataforma y cantidad
+    let textoPlataformas = "";
+    for (const [plataforma, cantidad] of plataformas) {
+        textoPlataformas += `${plataforma}: ${cantidad}   `;
+    }
+    document.getElementById("plataformas").textContent =
+        textoPlataformas || "Ninguna"; // Si esta vacio queda en niguna
+}
+
+actualizarEstadisticas();
+
+
+// Mostrar formulario
 botonMostrar.addEventListener("click", () => {
     formulario.hidden = false;
 });
 
 // Guardar un juego nuevo
 form.addEventListener("submit", (e) => {
-    e.preventDefault(); // evita que la página se recargue
+    e.preventDefault();
 
-    // Leemos los valores AQUÍ DENTRO: es cuando el usuario ya los ha escrito.
-    // Number() porque un input siempre da texto y valoración/horas deben ser números.
     const juego = new Videojuego(
         document.getElementById("titulo").value,
         document.getElementById("genero").value,
@@ -32,38 +69,54 @@ form.addEventListener("submit", (e) => {
         document.getElementById("portada").value
     );
 
-    videojuegos.push(juego);
-    guardarVideojuego(videojuegos);   // guardamos cada vez que cambia la lista
-    mostrarVideojuegos(videojuegos);
+    videojuegos.push(juego); // Añade un juego al final del array
+    historial.push(`Añadido: ${juego.titulo}`); // Apunta una frase en el historial, por ejemplo "Añadido: Zelda"
 
-    form.reset();
-    formulario.hidden = true;
+    guardarVideojuego(videojuegos); // Guarda la lista completa en el localStorage
+    mostrarVideojuegos(videojuegos); // Repinta la tabla con la lista actualizada
+    actualizarEstadisticas(); // Recalcula los datos de resumen
+
+    form.reset(); // Deja el formulario limpio 
+    formulario.hidden = true; // Vacía todos los campos del formulario
 });
 
-// Borrar: UN solo listener en el contenedor en vez de uno por botón.
-// Los clics "burbujean" hacia arriba (propagación), así que el contenedor se entera
-// del clic en cualquier botón hijo. Esto se llama delegación de eventos y funciona
-// también con las tarjetas que se creen más tarde.
+// Borrar juegos con data-id, coge la fecha y le asigna un id
 biblioteca.addEventListener("click", (e) => {
-    if (!e.target.matches("button[data-id]")) return; // ¿era un botón de borrar?
+    if (!e.target.matches("button[data-id]")) return; 
 
-    const id = Number(e.target.dataset.id); // dataset siempre da texto, lo pasamos a número
-    videojuegos = videojuegos.filter(juego => juego.id !== id); // nos quedamos con todos MENOS ese
+    const id = Number(e.target.dataset.id);
+    const juegoBorrado = videojuegos.find(j => j.id === id);
+
+    videojuegos = videojuegos.filter(juego => juego.id !== id);
+
+    if (juegoBorrado) {
+        historial.push(`Borrado: ${juegoBorrado.titulo}`);
+    }
+
     guardarVideojuego(videojuegos);
     mostrarVideojuegos(videojuegos);
+    actualizarEstadisticas();
 });
 
-// Buscador
+// Buscada el juego por le nombre
 document.getElementById("btnBuscar").addEventListener("click", () => {
     const texto = document.getElementById("buscador").value.toLowerCase();
-    const resultado = videojuegos.filter(juego => juego.titulo.toLowerCase().includes(texto));
+    const resultado = videojuegos.filter(juego =>
+        juego.titulo.toLowerCase().includes(texto)
+    );
     mostrarVideojuegos(resultado);
 });
 
-// Ordenar por valoración
+// Ordenar por valoracion
 document.getElementById("btnOrdenar").addEventListener("click", () => {
-    // [...videojuegos] hace una copia: sort() modifica el array original
-    // y no queremos cambiar el orden guardado, solo el orden en pantalla.
-    const ordenados = [...videojuegos].sort((a, b) => b.valoracion - a.valoracion);
-    mostrarVideojuegos(ordenados); // el paso que te faltaba
+    const ordenados = [...videojuegos].sort(crearOrden("valoracion", "desc"));
+    mostrarVideojuegos(ordenados);
 });
+
+function crearOrden(propiedad, orden = "desc") {
+    const cuerpo = orden === "desc"
+        ? `return b.${propiedad} - a.${propiedad};`
+        : `return a.${propiedad} - b.${propiedad};`;
+
+    return new Function("a", "b", cuerpo);
+}

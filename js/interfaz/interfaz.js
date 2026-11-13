@@ -1,35 +1,57 @@
-// Pinta en la página todos los juegos que reciba
-export function mostrarVideojuegos(videojuegos) {
-    const biblioteca = document.getElementById("biblioteca");
-    biblioteca.innerHTML = ""; // vaciamos para no duplicar tarjetas
+export function mostrarVideojuegos(videojuegos) { // Permite que la main la use con import
+    const biblioteca = document.getElementById("biblioteca"); // Busca <section id="biblioteca"> del HTML
+    biblioteca.innerHTML = ""; // Vacia antes de pintar
+
+    // Si no hay juegos añadidos sale el siguente texto
+    if (videojuegos.length === 0) {
+        biblioteca.innerHTML = "<p>No hay videojuegos para mostrar.</p>";
+        return;
+    }
+
+    // Crea la tabla en memoria
+    const tabla = document.createElement("table");
+    tabla.border = "1";
+    tabla.style.width = "100%";
+    tabla.style.borderCollapse = "collapse";
+    tabla.style.textAlign = "center";
+
+    // Crea la cabecera de la tabla 
+    const thead = document.createElement("thead");
+    thead.innerHTML = `
+        <tr>
+            <th>Portada</th>
+            <th>Título</th>
+            <th>Género</th>
+            <th>Empresa</th>
+            <th>Plataforma</th>
+            <th>Horas</th>
+            <th>Valoración</th>
+            <th>Acción</th>
+        </tr>
+    `;
+    tabla.appendChild(thead);
+
+    // El cuerpo de la tabla y una fila por cada juego con el bucle for
+    const tbody = document.createElement("tbody");
 
     videojuegos.forEach(juego => {
-        // Uso createElement + textContent en vez de innerHTML con ${...}:
-        // así, si alguien escribe código HTML en el título, se ve como texto y no se ejecuta.
-        const tarjeta = document.createElement("article");
+        const fila = document.createElement("tr");
 
-        const portada = document.createElement("img");
-        portada.src = "img/" + juego.portada;
-        portada.alt = juego.titulo;
-        portada.width = 150;
+        fila.innerHTML = `
+            <td><img src="img/${juego.portada}" alt="${juego.titulo}" width="80"></td>
+            <td>${juego.titulo}</td>
+            <td>${juego.genero}</td>
+            <td>${juego.empresa}</td>
+            <td>${juego.plataforma}</td>
+            <td>${juego.tiempoJugado} h</td>
+            <td>${juego.estrellas()}</td>
+            <td><button data-id="${juego.id}">Borrar</button></td>
+        `;
 
-        const titulo = document.createElement("h3");
-        titulo.textContent = juego.titulo;
-
-        const detalles = document.createElement("p");
-        detalles.textContent =
-            `${juego.genero} · ${juego.empresa} · ${juego.plataforma} · ${juego.tiempoJugado} h`;
-
-        const estrellas = document.createElement("p");
-        estrellas.textContent = juego.estrellas();
-
-        const btnBorrar = document.createElement("button");
-        btnBorrar.textContent = "Borrar";
-        // data-id guarda el id del juego dentro del propio botón; luego main.js lo leerá
-        btnBorrar.dataset.id = juego.id;
-
-        tarjeta.append(portada, titulo, detalles, estrellas, btnBorrar);
-        biblioteca.appendChild(tarjeta);
-
+        tbody.appendChild(fila);
     });
+
+    // Se cuelga en la pagina, no se queda en el aire
+    tabla.appendChild(tbody);
+    biblioteca.appendChild(tabla);
 }
